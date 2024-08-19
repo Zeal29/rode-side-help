@@ -1,32 +1,26 @@
-import { Image, StyleSheet, Platform, Text, TextInput, SafeAreaView, Button, Dimensions } from "react-native";
+import { Image, StyleSheet, Platform, Text, TextInput, SafeAreaView, Button } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Link } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import React, { useState } from "react";
-
-import { Link, useRouter } from "expo-router";
 import { CONTAINER_WIDTH, SCREEN_WIDTH } from "@/constants/dimentions";
 
 export default function HomeScreen() {
   const fontColor = useThemeColor({}, "text");
   const [text, onChangeText] = useState("");
-  const router = useRouter();
-
-  function toTOHome() {
-    router.replace("/Home");
-  }
 
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
       headerImage={<Image source={require("@/assets/images/sea.jpeg")} style={styles.reactLogo} />}
     >
-      <ThemedText type="title">Login</ThemedText>
+      <ThemedText type="title">Sign Up</ThemedText>
 
-      <ThemedView style={styles.titleContainer}>
+      <ThemedView>
         <ThemedText type="default">Email</ThemedText>
 
         <SafeAreaView>
@@ -34,7 +28,15 @@ export default function HomeScreen() {
         </SafeAreaView>
       </ThemedView>
 
-      <ThemedView style={styles.titleContainer}>
+      <ThemedView>
+        <ThemedText type="default">Phone No.</ThemedText>
+
+        <SafeAreaView>
+          <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
+        </SafeAreaView>
+      </ThemedView>
+
+      <ThemedView>
         <ThemedText type="default">Password</ThemedText>
 
         <SafeAreaView>
@@ -42,13 +44,17 @@ export default function HomeScreen() {
         </SafeAreaView>
       </ThemedView>
 
-      <Button title="Login" onPress={toTOHome}></Button>
+      <Button title="Sign up"></Button>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {},
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   stepContainer: {
     gap: 8,
     marginBottom: 8,
