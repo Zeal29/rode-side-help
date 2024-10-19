@@ -1,17 +1,49 @@
-import { Image, StyleSheet, Platform, Text, TextInput, SafeAreaView, Button } from "react-native";
+import { Image, StyleSheet, Platform, Text, TextInput, SafeAreaView, Button, Alert } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import React, { useState } from "react";
 import { CONTAINER_WIDTH, SCREEN_WIDTH } from "@/constants/dimentions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const fontColor = useThemeColor({}, "text");
-  const [text, onChangeText] = useState("");
+  const [email, onChangeEmail] = useState("");
+  const [password, onChangePassword] = useState("");
+  const [phone, onChangePhone] = useState("");
+
+  const route = useRouter();
+
+  async function onSignUp() {
+    if (phone.length < 11 || phone.length > 12) {
+      Alert.alert("Phone no. should be more then 11 digit.");
+      return;
+    }
+
+    if (!email.includes("@") || email.length < 5 || !email.includes(".")) {
+      Alert.alert("Incorrect Email");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Short Password", "It should be longer then 6 characters");
+      return;
+    }
+
+    await AsyncStorage.setItem("email", email);
+    await AsyncStorage.setItem("password", password);
+    await AsyncStorage.setItem("phone", phone);
+
+    onChangePassword("");
+    onChangeEmail("");
+    onChangePhone("");
+
+    route.replace("/Home");
+  }
 
   return (
     <ParallaxScrollView
@@ -24,7 +56,7 @@ export default function HomeScreen() {
         <ThemedText type="default">Email</ThemedText>
 
         <SafeAreaView>
-          <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
+          <TextInput style={styles.input} onChangeText={onChangeEmail} value={email} />
         </SafeAreaView>
       </ThemedView>
 
@@ -32,7 +64,7 @@ export default function HomeScreen() {
         <ThemedText type="default">Phone No.</ThemedText>
 
         <SafeAreaView>
-          <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
+          <TextInput style={styles.input} onChangeText={onChangePhone} value={phone} />
         </SafeAreaView>
       </ThemedView>
 
@@ -40,11 +72,11 @@ export default function HomeScreen() {
         <ThemedText type="default">Password</ThemedText>
 
         <SafeAreaView>
-          <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
+          <TextInput style={styles.input} secureTextEntry={true} onChangeText={onChangePassword} value={password} />
         </SafeAreaView>
       </ThemedView>
 
-      <Button title="Sign up"></Button>
+      <Button title="Sign up" onPress={onSignUp}></Button>
     </ParallaxScrollView>
   );
 }

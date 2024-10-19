@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, Text, TextInput, SafeAreaView, Button, Dimensions } from "react-native";
+import { Image, StyleSheet, Platform, Text, TextInput, SafeAreaView, Button, Dimensions, Alert } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -9,13 +9,34 @@ import React, { useState } from "react";
 
 import { Link, useRouter } from "expo-router";
 import { CONTAINER_WIDTH, SCREEN_WIDTH } from "@/constants/dimentions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const fontColor = useThemeColor({}, "text");
-  const [text, onChangeText] = useState("");
+  const [email, onChangeEmail] = useState("");
+  const [password, onChangePassword] = useState("");
   const router = useRouter();
 
-  function toTOHome() {
+  async function toTOHome() {
+    if (!email.includes("@") || email.length < 5 || !email.includes(".")) {
+      Alert.alert("Incorrect Email");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Short Password", "It should be longer then 6 characters");
+      return;
+    }
+
+    const storedEmail = await AsyncStorage.getItem("email");
+    const storedPassword = await AsyncStorage.getItem("password");
+
+    if (storedEmail != email || storedPassword != password) {
+      Alert.alert(`Incorrect Credentials`);
+
+      return;
+    }
+
     router.replace("/Home");
   }
 
@@ -30,7 +51,7 @@ export default function HomeScreen() {
         <ThemedText type="default">Email</ThemedText>
 
         <SafeAreaView>
-          <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
+          <TextInput style={styles.input} onChangeText={onChangeEmail} value={email} />
         </SafeAreaView>
       </ThemedView>
 
@@ -38,7 +59,7 @@ export default function HomeScreen() {
         <ThemedText type="default">Password</ThemedText>
 
         <SafeAreaView>
-          <TextInput style={styles.input} onChangeText={onChangeText} value={text} />
+          <TextInput style={styles.input} secureTextEntry={true} onChangeText={onChangePassword} value={password} />
         </SafeAreaView>
       </ThemedView>
 
